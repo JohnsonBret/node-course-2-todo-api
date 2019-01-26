@@ -1,4 +1,12 @@
+
+// MongoDB - local server running info - get into below directory
+// D:\Program Files\MongoDB\Server\4.0\bin
+// Run mongod command with the path below - port optional
+// mongod --dbpath /data/<path> --port <port no> 
+// D:\mongo-data
+
 // const MongoClient = require('mongodb').MongoClient;
+
 const {MongoClient, ObjectID} = require('mongodb');
 
 MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db)=>{

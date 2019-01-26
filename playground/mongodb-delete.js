@@ -13,13 +13,18 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db)=>{
     //     console.log(result);
     // });
 
-    //deleteMany
+    // deleteMany
     // db.collection('Users').deleteMany({name: 'Andrew'}).then((result) =>{
     //     console.log(result);
     // });
 
     //deleteOne
     // db.collection('Todos').deleteOne({text: 'Eat Lunch'}).then((result) =>{
+    //     console.log(result);
+    // });
+
+    //deleteOne USERS - ID
+    // db.collection('Users').deleteOne({_id: new ObjectID("5c4ca4c544f375d417b51861")}).then((result) =>{
     //     console.log(result);
     // });
 
@@ -33,9 +38,9 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db)=>{
     //     console.log(result);
     // });
 
-    db.collection('Users').findOneAndDelete({_id: new ObjectID('5c3ae4bc5eefc5dc7a5faa93')}).then((result) =>{
-        console.log(result);
-    });
+    // db.collection('Users').findOneAndDelete({_id: new ObjectID('5c3ae4bc5eefc5dc7a5faa93')}).then((result) =>{
+    //     console.log(result);
+    // });
 
 
     //db.close();
