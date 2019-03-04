@@ -3,6 +3,8 @@ require('./config/config');
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const hbs = require('hbs');
 const {ObjectID} = require('mongodb');
 
 var {mongoose} = require('./db/mongoose');
@@ -12,9 +14,30 @@ var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 
-const port = process.env.PORT;
+app.use(express.static(__dirname + "/../public"));
+hbs.registerPartials(__dirname + "/../views/partials");
+app.set('view engine', 'hbs');
+
 
 app.use(bodyParser.json());
+
+const port = process.env.PORT;
+
+app.get('/', (req,res)=>{
+    res.render('login.hbs', {
+        pageTitle: "Boodoo Login",
+        welcomeMessage: "Welcome to Boodoo",
+        company: "BretCo"
+    });
+});
+
+app.get('/dashboard', (req,res)=>{
+    res.render('dashboard.hbs', {
+        pageTitle: "Dashboard",
+        welcomeMessage: "Welcome to Boodoo",
+        company: "BOODOO"
+    });
+});
 
 app.post('/todos',authenticate, (req, res)=>{
     var todo = new Todo({
@@ -26,6 +49,31 @@ app.post('/todos',authenticate, (req, res)=>{
         res.send(doc);
     }, (e)=>{
         res.status(400).send(e);
+    });
+});
+
+app.post('/users', (req, res)=>{
+    var body = _.pick(req.body, ['email', 'password']);
+    var user = new User(body);
+
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token)=>{
+        res.header('x-auth', token).send(user);
+    }).catch((e)=>{
+        res.status(400).send(e);
+    });
+});
+
+app.post('/users/login', (req,res)=>{
+    var body = _.pick(req.body,['email', 'password']);
+
+    User.findByCredentials(body.email, body.password).then((user)=>{
+        return user.generateAuthToken().then((token)=>{
+            res.header('x-auth', token).send(user);
+        });
+    }).catch((e)=>{
+        res.status(400).send();
     });
 });
 
@@ -61,28 +109,10 @@ app.get('/todos/:id', authenticate, (req, res)=>{
     });
 });
 
-app.delete('/todos/:id', authenticate, (req,res) =>{
-    var id = req.params.id;
-
-    if(!ObjectID.isValid(id)){
-        return res.status(404).send();
-    }
-
-    Todo.findOneAndRemove({
-        _id: id,
-        _creator: req.user._id
-    }).then((todo) =>{
-
-        if(!todo){
-            return res.status(404).send();
-        }
-
-        res.status(200).send({todo});
-    }).catch((e) =>{
-        res.status(400).send();
-    });
-});
-
+app.get('/users/me', authenticate, (req, res)=>{
+    res.send(req.user);
+ });
+ 
 app.patch('/todos/:id', authenticate,(req, res) =>{
     var id = req.params.id;
     var body = _.pick(req.body, ['text', 'completed']);
@@ -111,33 +141,24 @@ app.patch('/todos/:id', authenticate,(req, res) =>{
 
 });
 
-app.post('/users', (req, res)=>{
-    var body = _.pick(req.body, ['email', 'password']);
-    var user = new User(body);
+app.delete('/todos/:id', authenticate, (req,res) =>{
+    var id = req.params.id;
 
-    user.save().then(() => {
-        return user.generateAuthToken();
-    }).then((token)=>{
-        res.header('x-auth', token).send(user);
-    }).catch((e)=>{
-        res.status(400).send(e);
-    });
-});
+    if(!ObjectID.isValid(id)){
+        return res.status(404).send();
+    }
 
+    Todo.findOneAndRemove({
+        _id: id,
+        _creator: req.user._id
+    }).then((todo) =>{
 
+        if(!todo){
+            return res.status(404).send();
+        }
 
-app.get('/users/me', authenticate, (req, res)=>{
-   res.send(req.user);
-});
-
-app.post('/users/login', (req,res)=>{
-    var body = _.pick(req.body,['email', 'password']);
-
-    User.findByCredentials(body.email, body.password).then((user)=>{
-        return user.generateAuthToken().then((token)=>{
-            res.header('x-auth', token).send(user);
-        });
-    }).catch((e)=>{
+        res.status(200).send({todo});
+    }).catch((e) =>{
         res.status(400).send();
     });
 });
