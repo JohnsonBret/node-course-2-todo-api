@@ -14,7 +14,12 @@
     {{>header}}
       
     <h1>Dashboard</h1>
-
+    <section id="newNoteContainer">
+      <div id="newNote" onfocusout="HideNewNoteFields()" onclick="ShowNewNoteFields()">
+        <p id="newNoteTitle" contenteditable="true">Title</p>
+        <p id="newNoteText" contenteditable="true" >Make a new Todo...<i class="far fa-edit"></i></p> 
+      </div>
+    </section>
     <div id="root"></div>
 
     {{>footer}}

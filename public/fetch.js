@@ -59,6 +59,17 @@ var isDataReceived = false;
 //   }
 // }
 
+function ShowNewNoteFields(){
+  var noteTitle = document.getElementById("newNoteTitle");
+  noteTitle.setAttribute("style", "display: block;");
+}
+
+function HideNewNoteFields(){
+  console.log("hide title note");
+  var noteTitle = document.getElementById("newNoteTitle");
+  noteTitle.setAttribute("style", "display: none;");
+}
+
 function createCardsFromData(data)
 {
   for(var i =0; i < data.length; i++)
