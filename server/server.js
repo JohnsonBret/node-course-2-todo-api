@@ -39,6 +39,14 @@ app.get('/dashboard', (req,res)=>{
     });
 });
 
+app.get('/logout', (req, res)=>{
+    res.render('logout.hbs', {
+        pageTitle: "Dashboard",
+        welcomeMessage: "Goodbye!",
+        company: "BOODOO"
+    });
+});
+
 app.post('/todos',authenticate, (req, res)=>{
     var todo = new Todo({
         text: req.body.text,

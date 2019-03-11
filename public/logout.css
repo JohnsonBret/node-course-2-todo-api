@@ -1,0 +1,37 @@
+main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0770b1;
+}
+
+#loggingOut{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #feffed;
+    padding: 5%;
+}
+
+#loggingOut img{
+    width: 35%;
+}
+
+#loggingOut p{
+    font-size: 1.5rem;
+}
+
+#signOutComplete{
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background-color: #feffed;
+    padding: 5%;
+}
+
+#signOutComplete p{
+    font-size: 1.5rem;
+}

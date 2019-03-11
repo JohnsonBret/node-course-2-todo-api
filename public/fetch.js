@@ -10,6 +10,15 @@ async function getTodos() {
         'x-auth': auth
         }
     });
+    
+
+    if(rawResponse.status == 401)
+    {
+      console.log("response status 401");
+      window.location = '/';
+      return;
+    }
+
     const content = await rawResponse.json();
 
     console.log(content, rawResponse.headers.get('x-auth'));
@@ -17,6 +26,7 @@ async function getTodos() {
     isDataReceived = true;
 
     createCardsFromData(content.todos);
+    AddContentEditableInputEvent();
 };
 
 async function login() {
@@ -32,42 +42,41 @@ async function login() {
         },
         body: JSON.stringify({email: mail, password: pass})
     });
-    const content = await rawResponse.json();
+    const content = await rawResponse.json()
 
+    //Dashboard is authenticating now so we need to wait to get our auth token
+    //before we allow a redirect to dashboard - this is NOT currently happening
     console.log(content, rawResponse.headers.get('x-auth'));
     sessionStorage.xauth = rawResponse.headers.get('x-auth');
+  
+    window.location = '/dashboard';
 
-    window.location = "/dashboard";
+
 };
 
 var cards = [];
 var isDataReceived = false;
 
-// function getMinecraftData(){
-  
-//   if(isDataReceived === false)
-//   {
-//     fetch('https://minecraft-ids.grahamedgecombe.com/items.json')
-//       .then(function(response) {
-//       return response.json();
-//     })
-//       .then(function(myJson) {
-//       //        console.log(JSON.stringify(myJson, undefined, 2));
-//       isDataReceived = true;
-//       createCardsFromData(myJson);
-//     });
-//   }
-// }
-
 function ShowNewNoteFields(){
   var noteTitle = document.getElementById("newNoteTitle");
   noteTitle.setAttribute("style", "display: block;");
+  moveCursorToContentEditableStart();
 }
 
 function HideNewNoteFields(){
   console.log("hide title note");
   var noteTitle = document.getElementById("newNoteTitle");
   noteTitle.setAttribute("style", "display: none;");
+}
+
+const moveCursorToContentEditableStart = () =>{
+  var el = document.getElementById("newNoteText");
+  var range = document.createRange();
+  var sel = window.getSelection();
+  range.setStart(el.childNodes[0], 0);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
 }
 
 function createCardsFromData(data)
@@ -128,7 +137,6 @@ function createImgElement(src)
 }
 
 function search(){
-//  console.log(document.getElementById("searchBar").value);
   var searchBar = document.getElementById("searchBar").value.toUpperCase();
   
   var results = [];
@@ -169,4 +177,20 @@ function search(){
       }
     }
   }
+}
+
+const AddContentEditableInputEvent = () =>{
+    document.getElementById("newNoteText").addEventListener("input", function(e) {
+    
+    var elem = e.target;
+    console.log(elem.innerHTML);
+
+    if(elem.innerHTML.includes('Make a new Todo...<i class="far fa-edit"></i>'))
+    {
+      e.target.innerHTML = "";
+    }
+    
+    
+    console.log("input event fired");
+    }, false);
 }
